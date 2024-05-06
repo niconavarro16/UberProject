@@ -1,6 +1,13 @@
 # UberProject
-The steps of the code are explained in the code with my own comments.
+## Data Cleaning
+- The first step involved loading the raw dataset into the R environment. The dataset was provided in CSV format.
+- Date.Time column was converted from character format to datetime format to enable temporal analysis.
+- Some categorical variables such as Day_of_Week, Hour, Month, Day, and Week were extracted from the 'Date.Time' column for further analysis.
+- After cleaning and preprocessing, a final cleaned dataset was created.
+
+
 ## 1. UberProject Code 
+The steps of the code are explained in the code with my own comments.
 
 ```
 library(ggplot2)
