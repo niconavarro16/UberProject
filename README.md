@@ -259,6 +259,38 @@ small_map <- leaflet(small_data) %>%
 
 #Print the smaller map
 print(small_map)
+
+
+
+
+###Building a prediction ride model###
+# Split the data into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(train_data$trips, p = 0.8, list = FALSE)
+train_data <- combined_data[train_index, ]
+test_data <- combined_data[-train_index, ]
+
+# Fit a random forest model
+library(randomForest)
+model <- randomForest(train_data[,1] ~ . - Date.Time, data = train_data, ntree = 50, nodesize = 10)
+
+# Evaluate the Model
+predictions <- predict(model, newdata = test_data)
+mae <- mean(abs(predictions - test_data[,1]))
+mse <- mean((predictions - test_data[,1])^2)
+
+# Print evaluation metrics
+print(paste("Mean Absolute Error (MAE):", mae))
+print(paste("Mean Squared Error (MSE):", mse))
+
+# Plotting actual vs. predicted values
+prediction_data <- data.frame(Actual = test_data[,1], Predicted = predictions)
+ggplot(prediction_data, aes(x = Actual, y = Predicted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  labs(title = "Actual vs. Predicted Trips", x = "Actual Trips", y = "Predicted Trips") +
+  theme_minimal()
+
 ```
 
 ## 2. Shiny app code
