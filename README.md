@@ -18,6 +18,7 @@ library(knitr)
 library(shiny)
 library(leaflet)
 library(leaflet.extras)
+library(caret)
 
 
 setwd("C:/Users/nicol/OneDrive/Augustana College/3 year/Spring term/DATA 332/Data/UberProject")
@@ -256,7 +257,6 @@ small_map <- leaflet(small_data) %>%
     
   )
 
-
 #Print the smaller map
 print(small_map)
 
@@ -264,32 +264,49 @@ print(small_map)
 
 
 ###Building a prediction ride model###
-# Split the data into training and testing sets
-set.seed(123)
-train_index <- createDataPartition(train_data$trips, p = 0.8, list = FALSE)
-train_data <- combined_data[train_index, ]
-test_data <- combined_data[-train_index, ]
+combined_data$Date.Time <- as.POSIXct(combined_data$Date.Time, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
-# Fit a random forest model
-library(randomForest)
-model <- randomForest(train_data[,1] ~ . - Date.Time, data = train_data, ntree = 50, nodesize = 10)
+#Filter for Saturdays because I am going to predict the next Saturdays
+saturdays_data <- combined_data %>% 
+  filter(wday(Date.Time, label = TRUE) == "Sat")
 
-# Evaluate the Model
-predictions <- predict(model, newdata = test_data)
-mae <- mean(abs(predictions - test_data[,1]))
-mse <- mean((predictions - test_data[,1])^2)
+#Aggregate to count trips by each Saturday
+saturday_counts <- saturdays_data %>%
+  group_by(Date = as.Date(Date.Time)) %>%
+  summarise(Trips = n())  # Counting the number of rows per group
 
-# Print evaluation metrics
-print(paste("Mean Absolute Error (MAE):", mae))
-print(paste("Mean Squared Error (MSE):", mse))
+#Building a simple linear model 
+saturday_counts$Week_Number <- as.numeric(format(saturday_counts$Date, "%U"))
 
-# Plotting actual vs. predicted values
-prediction_data <- data.frame(Actual = test_data[,1], Predicted = predictions)
-ggplot(prediction_data, aes(x = Actual, y = Predicted)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
-  labs(title = "Actual vs. Predicted Trips", x = "Actual Trips", y = "Predicted Trips") +
+#Linear model
+model <- lm(Trips ~ Week_Number, data = saturday_counts)
+
+#Summary of the model to see coefficients
+summary(model)
+
+#Making predictions for the next 10 Saturdays 
+last_week <- max(saturday_counts$Week_Number)
+new_weeks <- data.frame(Week_Number = (last_week + 1):(last_week + 10))
+predictions <- predict(model, newdata = new_weeks)
+
+#New data frame for plotting
+future_saturdays <- data.frame(Date = seq(max(saturday_counts$Date) + 7, by = "week", length.out = 10),
+                               Predicted_Trips = predictions)
+
+#Combine old and future data to plot
+plot_data <- rbind(saturday_counts %>% select(Date, Trips) %>% 
+                     rename(Predicted_Trips = Trips),
+                   future_saturdays)
+
+#Plot of the actual and predicted trips
+ggplot(plot_data, aes(x = Date, y = Predicted_Trips)) +
+  geom_line(color = "blue") +
+  geom_point(data = saturday_counts, aes(x = Date, y = Trips), color = "red") +
+  labs(title = "Predicted and Actual Trips on Saturdays",
+       x = "Date",
+       y = "Number of Trips") +
   theme_minimal()
+
 
 ```
 
@@ -376,9 +393,7 @@ ui <- dashboardPage(
                                      <p><strong>")))
       )
       
-      
-      
-      
+        
     )
   )
 )
@@ -524,4 +539,5 @@ server <- function(input, output) {
 
 #Run the application 
 shinyApp(ui, server)
+
 ```
