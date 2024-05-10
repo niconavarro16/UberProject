@@ -70,10 +70,11 @@ ggplot(hourly_trips, aes(x = Hour, y = trips)) +
        x = "Hour of Day",
        y = "Number of Trips") +
   theme_minimal()
+```
 
+<img src="UberProject/UberGraphs/nTripsHourOfDay.png" height = 250, width = 400>
 
-
-
+```
 ###TRIPS BY HOUR AND MONTH###
 #Getting the month names and adding the column
 combined_data$Month <- month(combined_data$Date.Time, label = TRUE)  
