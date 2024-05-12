@@ -72,7 +72,7 @@ ggplot(hourly_trips, aes(x = Hour, y = trips)) +
   theme_minimal()
 ```
 
-<img src="UberProject/UberGraphs/nTripsHourOfDay.png" height = 250, width = 400>
+<img src="UberGraphs/nTripsHourOfDay.png" height = 350, width = 500>
 
 ```
 ###TRIPS BY HOUR AND MONTH###
@@ -93,10 +93,11 @@ ggplot(hourly_monthly_trips, aes(x = Hour, y = trips, fill = Month)) +
        fill = "Month") +
   theme_minimal() +
   scale_fill_brewer(palette = "Paired") 
+```
 
+<img src="UberGraphs/nTripsByHourMonth.png" height = 350, width = 500>
 
-
-
+```
 ###Plot data by trips taken during every day of the month###
 #Adding the day to the combined data
 combined_data$day <- day(combined_data$Date.Time)
@@ -109,10 +110,11 @@ ggplot(daily_trips, aes(x = day, y = trips)) +
        x = "Day of the Month",
        y = "Number of Trips") +
   theme_minimal()
+```
 
+<img src="UberGraphs/nTripsByDayMonth.png" height = 350, width = 500>
 
-
-
+```
 ###I should see a table that shows Trips Every Day (Max 31 days in a month so I should see total trips taken each day)###
 #Pivot table for daily trips
 daily_trips <- combined_data %>%
@@ -142,10 +144,11 @@ ggplot(trips_by_day_and_month, aes(x = Month, y = Trips, fill = Day_of_Week)) +
        fill = "Day of the Week") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
+<img src="UberGraphs/nTripsByDayOfWeekMonth.png" height = 350, width = 500>
 
-
-
+```
 ###Chart Trips by Bases and Month (Base is the X axis and Month is your label)###
 #Pivot table for base and month
 trips_by_base_and_month <- combined_data %>%
@@ -162,10 +165,11 @@ ggplot(trips_by_base_and_month, aes(x = Base, y = Trips, fill = Month)) +
        fill = "Month") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
 
+<img src="UberGraphs/nTripsBaseMonth.png" height = 350, width = 500>
 
-
-
+```
 ###Heat map that displays by hour and day###
 #Pivot table for hour and day
 trips_by_hour_day <- combined_data %>%
@@ -182,10 +186,11 @@ ggplot(trips_by_hour_day, aes(x = Hour, y =  Day_of_Week, fill = Trips)) +
        fill = "Number of Trips") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 0, hjust = 1)) 
+```
 
+<img src="UberGraphs/heatmapHourDayOfWeek.png" height = 350, width = 500>
 
-
-
+```
 ###Heat map by month and day###
 ggplot(trips_by_day_and_month, aes(x = Day_of_Week, y = Month, fill = Trips)) +
   geom_tile(color = "white") +  
@@ -196,10 +201,11 @@ ggplot(trips_by_day_and_month, aes(x = Day_of_Week, y = Month, fill = Trips)) +
        fill = "Number of Trips") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 0, hjust = 1)) 
+```
 
+<img src="UberGraphs/heatmapMonthDayOfWeek.png" height = 350, width = 500>
 
-
-
+```
 ###Heat map by month and week###
 #Adding the week to the combined data (starting with 13 because it starts in April!!!!)
 combined_data$week <- week(combined_data$Date.Time)
@@ -219,10 +225,11 @@ ggplot(trips_by_month_and_week, aes(x = week, y = Month, fill = Trips)) +
        fill = "Number of Trips") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 0, hjust = 1))
+```
 
+<img src="UberGraphs/heatmapMonthWeekOfYear.png" height = 350, width = 500>
 
-
-
+```
 ###Heat map Bases and Day of Week###
 #Pivot table for Base and Day of the week
 trips_by_base_and_dayOfWeek <- combined_data %>%
@@ -239,10 +246,11 @@ ggplot(trips_by_base_and_dayOfWeek, aes(x = Base, y = Day_of_Week, fill = Trips)
        fill = "Number of Trips") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 0, hjust = 1))
+```
 
+<img src="UberGraphs/heatmapBaseDayOfWeek.png" height = 350, width = 500>
 
-
-
+```
 ###Leaflet Shiny Geospatial Map###
 # A sample of a smaller subset of the data because I can't work with all this data in my computer
 small_data <- combined_data %>% sample_n(5000)
@@ -262,10 +270,11 @@ small_map <- leaflet(small_data) %>%
 
 #Print the smaller map
 print(small_map)
+```
 
+<img src="UberGraphs/leafletUberImage.png" height = 400, width = 550>
 
-
-
+```
 ###Building a prediction ride model###
 combined_data$Date.Time <- as.POSIXct(combined_data$Date.Time, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
@@ -309,8 +318,11 @@ ggplot(plot_data, aes(x = Date, y = Predicted_Trips)) +
        x = "Date",
        y = "Number of Trips") +
   theme_minimal()
+```
 
+<img src="UberGraphs/predictiveModelSaturdays.png" height = 350, width = 500>
 
+```
 ```
 
 ## 2. Shiny app code
