@@ -1,6 +1,9 @@
 # UberProject
 ## URL shiny app
- https://niconavarro16.shinyapps.io/UberProject/ 
+https://niconavarro16.shinyapps.io/UberProject/ 
+
+Comment: I did the shiny app and it is working in R. However, when I publish it, it is not possible to see the graphs in the shinyapp.io website, that is why I have the graphs also in the README so that you can take a look to them.
+
 ## Data Cleaning
 - The first step involved loading the raw dataset into the R environment. The dataset was provided in CSV format.
 - Date.Time column was converted from character format to datetime format to enable temporal analysis.
